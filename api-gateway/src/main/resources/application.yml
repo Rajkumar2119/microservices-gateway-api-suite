@@ -1,0 +1,50 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      default-filters:
+        # Token bucket per user / IP, stored in Redis: 20 requests/s, bursts up to 40.
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 20
+            redis-rate-limiter.burstCapacity: 40
+            redis-rate-limiter.requestedTokens: 1
+            key-resolver: "#{@userOrIpKeyResolver}"
+      routes:
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+        - id: products
+          uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/products,/api/products/**
+          filters:
+            - StripPrefix=1
+        - id: orders
+          uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/orders,/api/orders/**
+          filters:
+            - StripPrefix=1
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:local-dev-secret-change-me-0123456789abcdef}
+    issuer: ${JWT_ISSUER:http://auth-service}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

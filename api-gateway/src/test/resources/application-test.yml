@@ -1,0 +1,20 @@
+security:
+  jwt:
+    secret: test-secret-for-unit-tests-only-0123456789
+    issuer: http://auth-service
+
+# Point the routes at a port where nothing listens, so a request that passes security fails with 5xx.
+AUTH_SERVICE_URL: http://localhost:1
+ORDER_SERVICE_URL: http://localhost:1
+
+management:
+  health:
+    redis:
+      enabled: false
+
+# No Redis in tests: fail fast so the rate limiter falls back to "allow" straight away.
+spring:
+  data:
+    redis:
+      timeout: 1s
+      connect-timeout: 1s
