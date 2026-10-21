@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:auth_db;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+security:
+  jwt:
+    secret: test-secret-for-unit-tests-only-0123456789
+    issuer: http://auth-service
+    token-ttl: PT5M
+
+bootstrap:
+  admin:
+    username: admin
+    password: Admin12345

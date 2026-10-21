@@ -1,0 +1,7 @@
+package com.rajkumar.auth.web.dto;
+
+import com.rajkumar.auth.domain.Role;
+import jakarta.validation.constraints.NotNull;
+
+public record RoleChangeRequest(@NotNull Role role) {
+}
